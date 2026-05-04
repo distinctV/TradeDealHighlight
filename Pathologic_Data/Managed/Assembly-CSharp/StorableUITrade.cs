@@ -10,6 +10,7 @@ public class StorableUITrade : Engine.Impl.UI.Menu.Protagonist.Inventory.Storabl
   [SerializeField]
   private GameObject _selectedImage;
   private int selectedCount;
+
   private void Start() => _selectedImage.SetActive(false);
 
   protected override void Update()
@@ -35,13 +36,12 @@ public class StorableUITrade : Engine.Impl.UI.Menu.Protagonist.Inventory.Storabl
     else
     {
       int currentDealStatus = 0;
-      if (internalStorable != null && internalStorable.Storage != null && internalStorable.Storage.Owner != null)
+      if (internalStorable?.Storage?.Owner != null && PLVirtualMachine.Common.EngineAPI.VMECS.VMGlobalMarketManager.Instance != null)
       {
-         StorableComponent storable = (StorableComponent)internalStorable;
-         bool playerBuying = storable.Storage.Owner.GetComponent<Engine.Source.Components.PlayerControllerComponent>() == null;
-         float basePrice = PLVirtualMachine.Common.EngineAPI.VMECS.VMGlobalMarketManager.Instance.GetCurrentItemTradeGlobalPrice(storable.Owner.Name, !playerBuying);
-         float actualPrice = playerBuying ? storable.Invoice.SellPrice : storable.Invoice.BuyPrice;
-         
+         bool playerBuying = internalStorable.Storage.Owner.GetComponent<Engine.Source.Components.PlayerControllerComponent>() == null;
+         float basePrice = PLVirtualMachine.Common.EngineAPI.VMECS.VMGlobalMarketManager.Instance.GetCurrentItemTradeGlobalPrice(internalStorable.Owner.Name, !playerBuying);
+         float actualPrice = playerBuying ? internalStorable.Invoice.SellPrice : internalStorable.Invoice.BuyPrice;
+
          if (basePrice > 0.0001f && Mathf.Abs(actualPrice - basePrice) > 0.01f)
          {
             if (playerBuying)
